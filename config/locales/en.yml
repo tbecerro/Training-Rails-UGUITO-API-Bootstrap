@@ -31,3 +31,7 @@
 
 en:
   hello: "Hello world"
+  note_min_length: "short"
+  note_medium_length: "medium"
+  note_long_length: "long"
+  note_limit_content_length: "The content of review-type notes cannot exceed %{limit} words."

@@ -12,7 +12,27 @@
 #
 class Note < ApplicationRecord
   belongs_to :user
-  enum note_type: {review: 0, critique:1}
+  enum note_type: { review: 0, critique: 1 }
   validates :title, :content, :note_type, presence: true
+  validate :limit_content_review
 
+  def limit_content_review
+    errors.add(:content, I18n.t("note_limit_content_length", limit: utility.limit_content_review_length )) if note_type == "review" && word_count > utility.limit_content_review_length
+  end 
+
+  def content_length
+   return I18n.t("note_min_length") if word_count <= utility.limit_min_length
+   return I18n.t("note_medium_length")if word_count > utility.limit_min_length && word_count <= utility.limit_medium_length
+   return I18n.t("note_long_length") if word_count > utility.limit_medium_length
+  end     
+
+  def  word_count 
+     content.split.size 
+  end 
+
+  def utility
+    user.utility
+  end
+
+ 
 end
