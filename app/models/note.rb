@@ -12,7 +12,7 @@
 #
 class Note < ApplicationRecord
   belongs_to :user
-  enum note_type: {review: 0, critique:1}
+  has_one :utility, through: :user
+  enum note_type: { review: 0, critique: 1 }
   validates :title, :content, :note_type, presence: true
-
 end
