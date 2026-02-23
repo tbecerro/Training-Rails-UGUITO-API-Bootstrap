@@ -29,14 +29,34 @@ FactoryBot.create(:user, utility: north_utility, email: 'test_north@widergy.com'
                          password: '12345678', password_confirmation: '12345678')
 
 # Notes
-FactoryBot.create(:note, title: "Prueba short North Utility", content:"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gge",  user_id:42)
-FactoryBot.create(:note, title: "Prueba medium North Utility", content:"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gafa Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gafa Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gafa", user_id:42)
-FactoryBot.create(:note, title: "Prueba large North Utility", content:"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gafa Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gafa Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gafa  Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown when an unknown when an unknown when an unknown", user_id:42)
+note_config = [
+  {
+    user:42, words: 49, content_type: 'short', utility: "North"
+  },
+   {
+    user:42, words: 99, content_type: 'medium', utility: "North"
+  },
+  {
+    user:42, words: 102, content_type: 'large', utility: "North" 
+  },
+  {
+    user:41, words: 59, content_type: 'short', utility: "South" 
+  },
+  {
+    user:41, words: 109, content_type: 'medium', utility: "South" 
+  },
+  {
+    user:41, words: 129, content_type: 'large', utility: "South" 
+  },
+]
 
-FactoryBot.create(:note, title: "Pueba short South Utiltiy", content: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gafa Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gafa Ipsum has been the industry" , user_id:41)
-FactoryBot.create(:note, title: "Pueba medium South Utiltiy", content: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gafa Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gafa Ipsum has been the industry  since the 1500s, when an unknown printer took a gafa Ipsum has been the industry", user_id:41)
-FactoryBot.create(:note, title: "Pueba large South Utiltiy", content:"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gafa Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gafa Ipsum has been the industry  since the 1500s, when an unknown printer took a gafa Ipsum has been the industry the 1500s, when an unknown printer took a gafa Ipsum has been the industry  since the 1500s, when an unknown printer took a gafa Ipsum has been the industry  the 1500s, when an unknown printer took a gafa Ipsum has been the industry  since the 1500s, when an unknown printer took a gafa Ipsum has been the industry" , user_id:41)
-
+note_config.each do |config|
+  FactoryBot.create(:note,
+    title: "Nota #{config[:content_type]} #{config[:utility]}",
+    content: Faker::Lorem.words(number: config[:words]).join(' '),
+    user_id: config[:user]
+  )
+end
 
 User.all.find_each do |user|
   random_books_amount = [1, 2, 3].sample
