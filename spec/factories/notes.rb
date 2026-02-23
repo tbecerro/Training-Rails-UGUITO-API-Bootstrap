@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :note do
-    title { :title }
-    content { :content }
+    title { Faker::Food.ethnic_category }
+    content { Faker::Food.description }
     note_type { :critique }
     association :user
   end
