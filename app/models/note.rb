@@ -29,7 +29,7 @@ class Note < ApplicationRecord
     return I18n.t('note_min_length') if word_count.between(0, utility.limit_min_length)
     return I18n.t('note_medium_length') if word_count.between(utility.limit_min_length,
                                                               utility.limit_medium_length)
-    return I18n.t('note_long_length') if over(utility.limit_medium_length)
+    I18n.t('note_long_length')
   end
 
   def word_count
