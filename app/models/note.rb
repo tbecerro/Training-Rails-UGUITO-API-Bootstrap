@@ -15,6 +15,7 @@ class Note < ApplicationRecord
   enum note_type: { review: 0, critique: 1 }
   validates :title, :content, :note_type, presence: true
   validate :limit_content_review
+  has_one :utility, through: :user
 
   def limit_content_review
     return unless note_type == 'review' && over(utility.limit_content_review_length)
