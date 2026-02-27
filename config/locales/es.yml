@@ -35,3 +35,8 @@ es:
   note_medium_length: "mediana"
   note_long_length: "larga"
   note_limit_content_length: "El contenido de las notas de tipo reseña no puede extenderse mas de %{limit} palabras."
+  active_record: 
+      note_controller:
+                  error: 
+                    note_type_param: "Parametro invalido. Usa 'review' o 'critique'"
+                    order_param: "Parametro invalido. Usa 'asc' o 'desc'"

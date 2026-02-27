@@ -1,38 +1,44 @@
 module Api
   module V1
     class NotesController < ApplicationController
+      before_action :validate_type_param, only: [:index]
+      before_action :validate_order_param, only: [:index]
+
       def index
-        notes_filtered
+        render json: response_notes_index, status: :ok
       end
 
       def show
-        render json: note_by_id, status: :ok
+        render json: Note.find(params.require(:id)), status: :ok
       end
 
       private
 
       def notes_filtered
-        notes = filter_by_type
-        notes = pagination(notes)
-        response.headers['X-Total-Count'] = notes.total_count
-        response.headers['X-Total-Pages'] = notes.total_pages
-        render json: notes, status: :ok
+        Note.where(params.permit(:note_type))
       end
 
-      def filter_by_type
-        notes = Note.all
-        notes = notes.where(note_type: params[:type]) if params[:type].present?
-        notes = notes.order(created_at: params[:order]) if params[:order].present?
+      def order_notes
+        notes_filtered.order(created_at: params[:order] || :asc)
       end
 
-      def pagination(notes)
-        page = params[:page] || 1
-        page_size = params[:page_size] || 10
-        notes.page(page).per(page_size)
+      def response_notes_index
+        order_notes.page(params[:page]).per(params[:page_size])
       end
 
-      def note_by_id
-        Note.find(params.require(:id))
+      def validate_type_param
+        allowed_types = %w[review critique]
+        return if !params[:note_type] || allowed_types.include?(params[:note_type].to_s)
+        render json: { error: I18n.t('active_record.note_controller.error.note_type_param') },
+               status: :bad_request
+      end
+
+      def validate_order_param
+        allowed_types = %w[asc desc]
+        return if !params[:order] || allowed_types.include?(params[:order].to_s)
+
+        render json: { error: I18n.t('active_record.note_controller.error.order_param') },
+               status: :bad_request
       end
     end
   end
