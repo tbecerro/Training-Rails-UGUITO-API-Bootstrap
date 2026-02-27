@@ -31,3 +31,7 @@
 
 es:
   hello: "Hola Mundo!"
+  note_min_length: "corta"
+  note_medium_length: "mediana"
+  note_long_length: "larga"
+  note_limit_content_length: "El contenido de las notas de tipo reseña no puede extenderse mas de %{limit} palabras."
