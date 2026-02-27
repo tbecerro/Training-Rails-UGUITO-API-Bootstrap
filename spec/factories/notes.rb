@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :note do
-    title { :title }
-    content { :content }
+    title { Faker::TvShows::BojackHorseman.character }
+    content { Faker::Lorem.paragraph }
     note_type { :critique }
     association :user
   end
