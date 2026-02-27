@@ -35,3 +35,8 @@ en:
   note_medium_length: "medium"
   note_long_length: "long"
   note_limit_content_length: "The content of review-type notes cannot exceed %{limit} words."
+  active_record: 
+      note_controller:
+                  error: 
+                    note_type_param: "Invalid type parameter. Use 'review' or 'critique'"
+                    order_param: "Invalid type parameter. Use 'asc' or 'desc'"
