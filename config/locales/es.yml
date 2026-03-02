@@ -38,5 +38,5 @@ es:
   active_record: 
       note_controller:
                   error: 
-                    note_type_param: "Parametro invalido. Usa 'review' o 'critique'"
+                    note_type_param: "Parametro invalido. Usa %{note_type_options}"
                     order_param: "Parametro invalido. Usa 'asc' o 'desc'"
