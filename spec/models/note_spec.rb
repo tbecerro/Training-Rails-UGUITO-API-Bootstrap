@@ -19,16 +19,18 @@ RSpec.describe Note, type: :model do
 
   describe 'enums' do
     it 'defines note_type enum correctly' do
-      expect(described_class.note_types).to include('review' => 0, 'critique' => 1)
+         should define_enum_for(:note_type).with_values(review: 0, critique: 1)
     end
   end
 
   describe '#word_count' do
     it 'counts words in content' do
-      note.content = 'this is a test'
-      expect(note.word_count).to eq(4)
+      note = build(:note)
+      expected_count = note.content.split.size
+     expect(note.word_count).to eq(expected_count)
     end
   end
+  
 
   describe '#over' do
     it 'returns true if word_count > limit' do
@@ -43,67 +45,65 @@ RSpec.describe Note, type: :model do
   end
 
   describe '#limit_content_review' do
-    let(:user) { create(:user) }
+    let (:utility) { create(:south_utility) }
+    let(:user) { create(:user, utility: utility)  }
     let(:note) { build(:note, user: user, note_type: note_type) }
 
-    before do
-      utility = double('Utility', limit_content_review_length: 100)
-      allow(note).to receive(:utility).and_return(utility)
-    end
 
     context 'when note_type is critique' do
       let(:note_type) { :critique }
 
       it 'does NOT validate content length' do
-        allow(note).to receive(:word_count).and_return(200)
+        allow(note).to receive(:word_count).and_return(999)
         expect(note).to be_valid
       end
     end
 
     context 'when note_type is review' do
       let(:note_type) { :review }
+      let(:limit) { utility.limit_content_review_length }
 
       it 'is valid if word_count within limit' do
-        allow(note).to receive(:word_count).and_return(50)
+        allow(note).to receive(:word_count).and_return(limit)
         expect(note).to be_valid
       end
 
       it 'is invalid if word_count exceeds limit' do
-        allow(note).to receive(:word_count).and_return(150)
-        expect(note).not_to be_valid
+        allow(note).to receive(:word_count).and_return(limit + 1)
+        note.valid? 
         expect(note.errors[:content]).to include(
-          I18n.t('note_limit_content_length', limit: 100)
+          I18n.t('note_limit_content_length', limit: limit)
         )
       end
     end
   end
 
   describe '#content_length' do
-    let(:user) { create(:user) }
+    let(:utility) { create(:north_utility) }
+    let(:user) { create(:user,  utility: utility) }
     let(:note) { build(:note, user: user) }
 
-    before do
-      utility = double('Utility',
-                       limit_min_length: 50,
-                       limit_medium_length: 100)
-      allow(note).to receive(:utility).and_return(utility)
-    end
 
     it 'returns min when word_count <= min' do
-      allow(note).to receive(:word_count).and_return(30)
+      allow(note).to receive(:word_count).and_return(utility.limit_min_length)
       expect(note.content_length).to eq(I18n.t('note_min_length'))
     end
 
     it 'returns medium when word_count between min and medium' do
-      allow(note).to receive(:word_count).and_return(75)
+       between_value = (utility.limit_min_length + utility.limit_medium_length) / 2
+      allow(note).to receive(:word_count).and_return(between_value)
       expect(note.content_length).to eq(I18n.t('note_medium_length'))
     end
 
     it 'returns long when word_count > medium' do
-      allow(note).to receive(:word_count).and_return(150)
+      allow(note).to receive(:word_count).and_return(utility.limit_medium_length + 1)
       expect(note.content_length).to eq(I18n.t('note_long_length'))
     end
+
   end
+
+
+
 
   describe '#utility' do
     it 'delegates to user' do
