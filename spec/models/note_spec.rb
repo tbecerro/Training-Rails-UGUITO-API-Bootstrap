@@ -19,7 +19,7 @@ RSpec.describe Note, type: :model do
 
   describe 'enums' do
     it 'defines note_type enum correctly' do
-         should define_enum_for(:note_type).with_values(review: 0, critique: 1)
+      expect(subject).to define_enum_for(:note_type).with_values(review: 0, critique: 1)
     end
   end
 
@@ -27,10 +27,9 @@ RSpec.describe Note, type: :model do
     it 'counts words in content' do
       note = build(:note)
       expected_count = note.content.split.size
-     expect(note.word_count).to eq(expected_count)
+      expect(note.word_count).to eq(expected_count)
     end
   end
-  
 
   describe '#over' do
     it 'returns true if word_count > limit' do
@@ -45,10 +44,9 @@ RSpec.describe Note, type: :model do
   end
 
   describe '#limit_content_review' do
-    let (:utility) { create(:south_utility) }
-    let(:user) { create(:user, utility: utility)  }
+    let(:utility) { create(:south_utility) }
+    let(:user) { create(:user, utility: utility) }
     let(:note) { build(:note, user: user, note_type: note_type) }
-
 
     context 'when note_type is critique' do
       let(:note_type) { :critique }
@@ -70,7 +68,7 @@ RSpec.describe Note, type: :model do
 
       it 'is invalid if word_count exceeds limit' do
         allow(note).to receive(:word_count).and_return(limit + 1)
-        note.valid? 
+        note.valid?
         expect(note.errors[:content]).to include(
           I18n.t('note_limit_content_length', limit: limit)
         )
@@ -80,9 +78,8 @@ RSpec.describe Note, type: :model do
 
   describe '#content_length' do
     let(:utility) { create(:north_utility) }
-    let(:user) { create(:user,  utility: utility) }
+    let(:user) { create(:user, utility: utility) }
     let(:note) { build(:note, user: user) }
-
 
     it 'returns min when word_count <= min' do
       allow(note).to receive(:word_count).and_return(utility.limit_min_length)
@@ -90,7 +87,7 @@ RSpec.describe Note, type: :model do
     end
 
     it 'returns medium when word_count between min and medium' do
-       between_value = (utility.limit_min_length + utility.limit_medium_length) / 2
+      between_value = (utility.limit_min_length + utility.limit_medium_length) / 2
       allow(note).to receive(:word_count).and_return(between_value)
       expect(note.content_length).to eq(I18n.t('note_medium_length'))
     end
@@ -99,11 +96,7 @@ RSpec.describe Note, type: :model do
       allow(note).to receive(:word_count).and_return(utility.limit_medium_length + 1)
       expect(note.content_length).to eq(I18n.t('note_long_length'))
     end
-
   end
-
-
-
 
   describe '#utility' do
     it 'delegates to user' do
