@@ -39,5 +39,9 @@ class Note < ApplicationRecord
     word_count > limit
   end
 
+  def self.note_type_keys
+    Note.note_types.keys
+  end
+
   delegate :utility, to: :user
 end
