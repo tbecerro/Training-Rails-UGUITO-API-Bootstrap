@@ -1,6 +1,8 @@
 module Api
   module V1
     class NotesController < ApplicationController
+      before_action :authenticate_user!
+
       def index
         return invalid_filter unless valid_filter?
         return invalid_order unless valid_order?
