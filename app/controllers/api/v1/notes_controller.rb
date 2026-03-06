@@ -13,7 +13,35 @@ module Api
         render json: Note.find(params.require(:id)), status: :ok, serializer: ShowNoteSerializer
       end
 
+      def create
+        return missing_parameters unless required_params_present?
+        return invalid_filter unless valid_filter?
+        return failure_creation_note unless valid_create_note?
+        render json: 'Nota creada con exito.', status: :ok
+      end
+
       private
+
+      def create_note
+        Note.new(title: params[:title], content: params[:content], note_type: params[:note_type],
+                 user: current_user)
+      end
+
+      def valid_create_note?
+        create_note.save
+      end
+
+      def failure_creation_note
+        render_error(I18n.t('note_limit_content_length', limit: 50))
+      end
+
+      def required_params_present?
+        params[:title].present? && params[:content].present? && params[:note_type].present?
+      end
+
+      def missing_parameters
+        render_error('Faltan parámetros requeridos')
+      end
 
       def valid_filter?
         !params[:note_type] || Note.note_type_keys.include?(params[:note_type].to_s)
