@@ -4,7 +4,6 @@ describe Api::V1::NotesController, type: :controller do
   describe 'GET #index' do
     context 'when there is a user logged in' do
       include_context 'with authenticated user'
-    
 
       context 'when fetching all the notes for user' do
         let(:notes) { create_list(:note, 10, user: user) }
@@ -14,11 +13,11 @@ describe Api::V1::NotesController, type: :controller do
         it 'responds with 200 status' do
           expect(response).to have_http_status(:ok)
         end
-
       end
 
       context 'with invalid note_type filter' do
         let(:notes) { create_list(:note, 10, user: user) }
+
         before { get :index, params: { note_type: 'invalid_type' } }
 
         it 'returns bad request' do
@@ -71,9 +70,8 @@ describe Api::V1::NotesController, type: :controller do
       end
     end
 
-
     context 'with pagination' do
-              include_context 'with authenticated user'
+      include_context 'with authenticated user'
 
       let!(:all_notes) { create_list(:note, 5, user: user) }
 
@@ -94,7 +92,7 @@ describe Api::V1::NotesController, type: :controller do
       end
     end
   end
-  
+
   describe 'GET #show' do
     context 'when user is authenticated' do
       include_context 'with authenticated user'
@@ -111,8 +109,8 @@ describe Api::V1::NotesController, type: :controller do
           expect(response).to have_http_status(:ok)
         end
 
-        it 'serializes with ShowNoteSerializer' do 
-          expect(response_body.keys).to include('id', 'title', 'content', 'note_type', 'word_count', 'created_at','content_length', 'user','word_count' )
+        it 'serializes with ShowNoteSerializer' do
+          expect(response_body.keys).to include('id', 'title', 'content', 'note_type', 'word_count', 'created_at', 'content_length', 'user', 'word_count')
         end
       end
 
@@ -123,7 +121,52 @@ describe Api::V1::NotesController, type: :controller do
           expect(response).to have_http_status(:not_found)
         end
       end
+    end
+  end
 
+  describe 'POST /api/v1/notes' do
+    include_context 'with authenticated user'
+
+    let(:valid_params) do
+      {
+        title: 'My note',
+        content: 'Test content',
+        note_type: 'review'
+      }
+    end
+
+    context 'when required parameters are missing' do
+      it 'returns error when title is missing' do
+        post :create, params: valid_params.except(:title)
+
+        expect(response).to have_http_status(:bad_request)
+      end
+
+      it 'returns error when content is missing' do
+        post :create, params: valid_params.except(:content)
+
+        expect(response).to have_http_status(:bad_request)
+      end
+
+      it 'returns error when note_type is missing' do
+        post :create, params: valid_params.except(:note_type)
+
+        expect(response).to have_http_status(:bad_request)
+      end
+
+      it 'returns error when multiple parameters are missing' do
+        post :create, params: { title: 'only title' }
+
+        expect(response).to have_http_status(:bad_request)
+      end
+    end
+
+    context 'with valid parameters' do
+      it 'creates the note and returns success' do
+        post :create, params: valid_params
+
+        expect(response).to have_http_status(:ok)
+      end
     end
   end
 end

@@ -19,7 +19,7 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :notes,  only: %i[index show]
+    resources :notes,  only: %i[index show create]
 
     resource :users do
       get :current
